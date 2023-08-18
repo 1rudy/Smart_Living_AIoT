@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Face recognize</title>
+    <style>
+         h1 {
+      color: #ffffff; /* Replace with your desired color code or color name */
+         }
+        body {
+            /* Set the background image URL and other background properties */
+            background-image: url('/static/background-image.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            /* Add other styles if needed */
+        }
+
+        #video-container {
+            position: relative;
+            border: 5px solid #ffffff; /* Add frame border around the camera */
+            margin: 20px;
+            display: inline-block;
+        }
+
+        #capture-btn {
+            font-size: 24px; /* Increase button font size */
+            padding: 10px 20px; /* Increase button padding */
+            background-color: #4022ab;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>   Verify your face here...!!</h1>
+    <div id="mach-found">Welcome!</div> <!-- Fixed typo in div id -->
+    <div id="video-container">
+        <video id="video" width="640" height="480" autoplay></video>
+    </div>
+    <button id="capture-btn">Recognize Face</button>
+    <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('capture-btn');
+        let mediaStream;
+
+        // Function to redirect to a new page
+        function redirectTo(url) {
+            window.location.href = url;
+        }
+
+        // Get access to the user's camera
+        function getCameraStream() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    mediaStream = stream;
+                    video.srcObject = stream;
+                })
+                .catch(error => {
+                    console.error('Error accessing the camera: ', error);
+                    // Show a message to the user that the camera access is required.
+                    document.getElementById('mach-found').innerText = 'Camera access is required to use this feature.';
+                });
+        }
+
+        // Try to get the camera stream when the page loads
+        document.addEventListener("DOMContentLoaded", getCameraStream);
+
+        // Capture and save the image on the server
+        captureButton.addEventListener('click', () => {
+            if (!mediaStream) {
+                // If the camera stream is not available, try to get it again.
+                getCameraStream();
+                return;
+            }
+
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert the canvas image to a Data URL
+            const imageData = canvas.toDataURL('image/png');
+
+            // Send the image data to the server using a POST request
+            fetch('/save_image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 'image_data': imageData })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response from the server if needed
+                console.log('Image saved successfully!');
+                // Redirect to a new page after capturing and saving the image
+                redirectTo('/speech_to_text'); // Replace '/another_page' with the desired URL
+                // Stop the video stream after capturing and saving the image
+                if (mediaStream) {
+                    const tracks = mediaStream.getTracks();
+                    tracks.forEach(track => track.stop());
+                }
+            })
+            .catch(error => {
+                console.error('Error saving the image: ', error);
+            });
+        });
+    </script>
+</body>
+</html>

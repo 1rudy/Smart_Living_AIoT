@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Speech to Text</title>
+    <style>
+        body {
+            background-image: url('/static/background-image.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ffffff;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .text-area {
+            width: 400px;
+            height: 100px;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        .btn-container {
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #125;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #424;
+        }
+    </style>
+</head>
+<body>
+    <h1>SPEAK HERE</h1>
+    <div class="container">
+        <textarea id="text" class="text-area" placeholder="Speak something..."></textarea>
+        <div class="btn-container">
+            <button id="submit-btn" class="btn">Submit</button>
+            <button id="voice-btn" class="btn">Voice Input</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function publishText(text) {
+            $.ajax({
+                url: '/mqtt-publish',
+                type: 'POST',
+                data: { text: text },
+                success: function(response) {
+                    console.log(response);
+                    // Do something with the response if needed
+                },
+                error: function(error) {
+                    console.error(error);
+                }
+            });
+        }
+
+        // Speech Recognition
+        var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        var recognition = new SpeechRecognition();
+        var textArea = document.getElementById('text');
+        var submitButton = document.getElementById('submit-btn');
+        var voiceButton = document.getElementById('voice-btn');
+
+        recognition.continuous = true;
+
+        recognition.onresult = function(event) {
+            var currentResultIndex = event.resultIndex;
+            var transcript = event.results[currentResultIndex][0].transcript;
+            textArea.value = transcript;
+        };
+
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error occurred: ' + event.error);
+        };
+
+        recognition.onend = function() {
+            voiceButton.disabled = false;
+        };
+
+        submitButton.addEventListener('click', function() {
+            var text = textArea.value;
+            publishText(text);
+        });
+
+        voiceButton.addEventListener('click', function() {
+            recognition.start();
+            voiceButton.disabled = true;
+
+
+
+
+        });
+    </script>
+</body>
+</html>
