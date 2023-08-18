@@ -27,6 +27,15 @@ Arduino IDE
 MQTT Server
 Flask Web Application
 
+<img width="582" alt="image" src="https://github.com/1rudy/Smart_Living_AIoT/assets/118504450/9f8e0de5-9d0a-4448-b57a-eca0eacc281e">
+
+
+## IDENTIFYING FACES:
+The class Identifier in the app.py file contains the code to detect and recognize faces by using the face_recognition library. When the views call the check function and the image is passed, this function finds the faces in the image and the face encodings in the image. If the encodes match any of the encodings in images then the page will redirect to the next page. If none of the images match, the page will be the same. 
+
+## SPEECH-TO-TEXT MODULE  
+This web page is for speech-to-text conversion. The page contains a background image, a heading ("SPEAK HERE"), and a text area where users can speak something and see the text representation. There are two buttons: "Submit" to send the entered text for processing (presumably to a server), and "Voice Input" to initiate speech recognition. The JavaScript code uses the Web Speech API to enable voice recognition, allowing users to speak into the textarea. When the "Voice Input" button is clicked, the recognition starts, and the text result is displayed in the text area. The "Submit" button is used to send the text to the MQTT server using the Flask application.
+
 
 
 
