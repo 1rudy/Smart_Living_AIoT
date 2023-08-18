@@ -17,6 +17,16 @@ congestion. As a solution, adopting the MQTT protocol in home automation enables
 real-time data and execute control commands effectively. MQTT's efficiency, simplicity, and support for various IoT platforms make it an essential and indispensable
 component in home automation systems, promoting a seamless and smarter living experience for homeowners.
 
+## COMPONENTS
+WIZnet-W5300 TOE SHIELD 
+LEDs, Buzzers, Doors, fans, and any other electronic components
+ 
+## SOFTWARE
+PYCharm
+Arduino IDE
+MQTT Server
+Flask Web Application
+
 
 
 
