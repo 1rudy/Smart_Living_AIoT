@@ -5,18 +5,19 @@
 #include <Ethernet.h>
 #include <PubSubClient.h>
 #include <Servo.h>
+#include "HardwareSerial.h"
 
 //Defining Network and MQTT Parameters:
-byte mac[]    = {  0xDE, 0xED, 0xBA, 0xFE, 45, 0xED };
+byte mac[]    = {  0xDE, 0xED, 0xBA, 0xFE, 67, 0xED };
 IPAddress ip(172, 16, 0, 100);
-IPAddress server(44, 195, 202, 69);
+IPAddress server(10,21,70, 16);
 
 //Initializing Hardware:
 Servo servoMoter;
 
-int led1=2;
-int led2=3;
-int buzzerpin=4;
+int led1=0;
+int led2=1;
+int buzzerpin=15;
 
 //Callback Function:
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -78,7 +79,7 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect("arduinoClient45")) {
+    if (client.connect("arduinoClient67")) {
       Serial.println("connected");
       // Once connected, publish an announcement...
       client.publish("outTopic","hello world");
@@ -96,12 +97,18 @@ void reconnect() {
 
 void setup()
 {
+
+  Serial3.setRx(PC11);
+  Serial3.setTx(PC10);  
+  delay(50);
+  
+  Serial.begin(9600);
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
   pinMode(buzzerpin,OUTPUT);
-  servoMoter.attach(1);
-  Serial.begin(57600);
-  Ethernet.init(17);
+  servoMoter.attach(3);
+  //Serial.begin(57600);
+  //Ethernet.init(17);
   client.setServer(server, 1883);
   client.setCallback(callback);
 
